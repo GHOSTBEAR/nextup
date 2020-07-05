@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 
+import os
 from datetime import datetime
 
+import urllib3
 from gql import Client, gql
 from gql.transport.requests import RequestsHTTPTransport
 from numpy.core import long
 from rich.console import Console
+
+urllib3.disable_warnings()
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+SETTING_FILE = ROOT_DIR + "/setting.txt"
 
 console = Console()
 
@@ -36,17 +43,20 @@ def readtokenfromfile():
 
     access_token = ""
 
-    with open('setting.txt', 'r') as file:
-        try:
-            access_token = file.readline()
-        except:
-            print()
+    try:
+        with open(SETTING_FILE, 'r') as file:
+            try:
+                access_token = file.readline()
+            except:
+                console.print("Couldn't read from file!", "Well this is awkward", ":flushed:")
+    except:
+        console.print("Couldn't open file!", "Don't worry everything is fine", ":exploding_head:")
 
     return access_token
 
 
 def writetokentofile(access_token):
-    with open('setting.txt', 'a') as file:
+    with open(SETTING_FILE, 'a') as file:
         file.write(access_token)
 
 
