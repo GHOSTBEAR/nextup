@@ -1,3 +1,3 @@
-gql
+gql==v3.0.0a1
+rich==v3.3.2
 numpy
-rich

@@ -4,8 +4,7 @@ import os
 from datetime import datetime
 
 import urllib3
-from gql import Client, gql
-from gql.transport.requests import RequestsHTTPTransport
+from gql import Client, gql, AIOHTTPTransport
 from numpy.core import long
 from rich.console import Console
 
@@ -13,6 +12,9 @@ urllib3.disable_warnings()
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 SETTING_FILE = ROOT_DIR + "/setting.txt"
+
+with open(ROOT_DIR + "/schema.graphql") as f:
+    SCHEMA_STR = f.read()
 
 console = Console()
 
@@ -83,11 +85,9 @@ def askfortoken() -> str:
     return access_token
 
 
-def createtransport(access_token: str) -> RequestsHTTPTransport:
-    return RequestsHTTPTransport(
+def createtransport(access_token: str) -> AIOHTTPTransport:
+    return AIOHTTPTransport(
         url='https://graphql.anilist.co',
-        verify=False,
-        retries=3,
         headers={
             'Authorization': 'Bearer ' + access_token,
             'Content-Type': 'application/json',
@@ -96,10 +96,10 @@ def createtransport(access_token: str) -> RequestsHTTPTransport:
     )
 
 
-def setupclient(transport: RequestsHTTPTransport) -> Client:
+def setupclient(transport: AIOHTTPTransport) -> Client:
     return Client(
         transport=transport,
-        fetch_schema_from_transport=True,
+        schema=SCHEMA_STR
     )
 
 
